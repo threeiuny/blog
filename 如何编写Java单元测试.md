@@ -42,6 +42,8 @@ tags: 单元测试、Java、JUnit4、JUnit5、Mockito、PowerMock、Spock
 
 * **维护性（Maintainability）**：单元测试应该易于维护，随着代码的变化和演进而进行更新和调整。采用模块化、可重用的测试代码和合适的设计模式可以提高测试的可维护性。
 
+<!-- more -->
+
 ## Java单元测试框架
 
 在Java开发中，有多种单元测试框架可供选择，其中最常用的包括JUnit、TestNG、Mockito、PowerMock、Spock等。下面将介绍其中几种常用的Java单元测试框架。
@@ -141,8 +143,36 @@ import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.hamcrest.CoreMatchers;
 
+// 默认为 @RunWith(BlockJUnit4ClassRunner.class) 
+// @RunWith(BlockJUnit4ClassRunner.class) 
 public class CalculatorTest {
+
     private Calculator calculator = new Calculator();
+
+    // @BeforeClass只能修饰静态方法，最先执行且只执行一次 
+    @BeforeClass
+    public static void beforeClass() {
+        System.out.println("beforeClass");
+    }
+
+    // @AfterClass只能修饰静态方法，最后执行且只执行一次
+    @AfterClass
+    public static void afterClass() {
+        System.out.println("afterClass");
+    }
+
+    // @Before在每个测试方法执行前都会执行一次
+    @Before
+    public void before() {
+        System.out.println("before");
+    }
+
+    // @After在每个测试方法后都会执行一次
+    @After
+    public void after() {
+        System.out.println("after");
+    }
+
 
     @Test
     public void testAdd() {
@@ -191,19 +221,29 @@ public class CalculatorTest {
         );
         assertEquals("/ by zero", thrown.getMessage());
     }
+
+    // @Ignore标记不需要执行的测试方法
+    @Test
+    @Ignore
+    public void testIgnore() {
+        calculator.longRunningOperation();
+    }
 }
 ```
 
+使用JUnit4进行参数化测试，创建参数化测试需要遵循五个步骤
+
+* 使用@RunWith（Parameterized.class）注释测试类。
+
+* 创建一个使用@Parameters注释的公共静态方法，该方法返回一个对象集合（Collection）作为测试数据集，Collection的具体类型并不重要，重要的是它包含的元素。每个元素都应该是一个数组，这个数组的元素将作为参数传递给参数化测试的构造函数和测试方法。
+
+* 创建一个公共构造函数，它接受相当于一行“测试数据”的内容。
+
+* 为测试数据的每个“列”创建一个实例变量。
+
+* 使用实例变量作为测试数据的来源创建测试用例。
+
 ```java
-/*
-* 
-* 创建参数化测试需要遵循五个步骤:
-* 1、使用@RunWith（Parameterized.class）注释测试类。
-* 2、创建一个使用@Parameters注释的公共静态方法，该方法返回一个对象集合（Collection）作为测试数据集，Collection的具体类型并不重要，重要的是它包含的元素。每个元素都应该是一个数组，这个数组的元素将作为参数传递给参数化测试的构造函数和测试方法。。
-* 3、创建一个公共构造函数，它接受相当于一行“测试数据”的内容。
-* 4、为测试数据的每个“列”创建一个实例变量。
-* 5、使用实例变量作为测试数据的来源创建测试用例。
-*/
 package org.carey.junit4;
 
 import org.junit.*;
@@ -245,5 +285,47 @@ public class JUnit4CalculateTest {
         int result = jUnit4Calculate.add(input1, input2);
         assertEquals(expected, result);
     }
+}
+```
+
+使用JUnit4进行套件测试如下：
+
+```java
+public class TestClass1 {
+    @Test
+    public void test1() {
+        System.out.println("TestClass1: test1");
+    }
+
+    @Test
+    public void test2() {
+        System.out.println("TestClass1: test2");
+    }
+}
+
+public class TestClass2 {
+    @Test
+    public void test1() {
+        System.out.println("TestClass2: test1");
+    }
+
+    @Test
+    public void test2() {
+        System.out.println("TestClass2: test2");
+    }
+}
+```
+
+```java
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+    TestClass1.class,
+    TestClass2.class
+})
+public class TestSuite {
+    // 这个类不需要包含任何代码
 }
 ```
