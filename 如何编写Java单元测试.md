@@ -439,6 +439,57 @@ JUnit5除了继承了JUnit4的注解之外，还引入了一些新的注解，�
 
 * `assertThat()`：接受一个匹配器（Matcher）对象作为参数，用于定义测试的预期行为。如果要在JUnit5中使用`assertThat()`，需要引入Hamcrest框架依赖，然后使用`assertThat()`方法结合Hamcrest的Matcher来验证方法调用的结果。
 
+#### JUnit5假设
+
+JUnit Jupiter附带了JUnit 4提供的假设方法的一个子集，并添加了一些可以很好地用于Java 8 lambdas的假设方法。
+
+`Assumptions`即假设类，里面提供了很多静态方法，例如`assumeTrue`(如果assumeTrue的入参为false，就会抛出TestAbortedException异常，Junit对抛出此异常的方法判定为跳过)、`assumeThat`等。简单的说，Assertions的方法抛出异常意味着测试不通过，Assumptions的方法抛出异常意味着测试被跳过。`Assertions`和`Assumptions`都用来对比预期值和实际值，当预期值和实际值不一致时，Assertions的测试结果是执行失败，Assumptions的测试结果是跳过(或者忽略)。
+
+`Assumptions`常用方法如下：
+
+* `assumeTrue`：假设条件为true，否则跳过测试。
+
+* `assumingThat`：假设条件为true，否则跳过测试。
+
+* `assumeFalse`：假设条件为false，否则跳过测试。
+
+* `abort`：中止测试。
+
+```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assumptions.*;
+
+class AssumptionsExample {
+
+    @Test
+    void testAssumeTrue() {
+        System.setProperty("ENV", "DEV");
+        assumeTrue("DEV".equals(System.getProperty("ENV")), "This test is only for DEV environment");
+        // 假设成立才会继续执行，否则会跳过
+    }
+
+    @Test
+    void testAssumeFalse() {
+        System.setProperty("ENV", "PROD");
+        assumeFalse("DEV".equals(System.getProperty("ENV")), "This test is not for DEV environment");
+        // 假设成立才会继续执行，否则会跳过
+    }
+
+    @Test
+    void testAssumingThat() {
+        System.setProperty("ENV", "PROD");
+        assumingThat("PROD".equals(System.getProperty("ENV")),
+            () -> {
+                // 当满足条件时才会执行
+                assertEquals(5, 5);
+            });
+
+        // 都会执行
+        assertEquals(42, 42);
+    }
+}
+```
+
 #### JUnit5异常处理
 
 * `assertThrows()`：测试被测试方法是否抛出至少指定的异常。如果被测试方法抛出多个异常，则只要其中一个异常与指定的异常类型匹配，测试就会通过。
