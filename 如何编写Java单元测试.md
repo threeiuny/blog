@@ -329,3 +329,295 @@ public class TestSuite {
     // 这个类不需要包含任何代码
 }
 ```
+
+### JUnit5
+
+JUnit5是JUnit的最新版本，它提供了一组全新的编程模型和扩展模型，支持更多的测试场景和用例。与以前的JUnit版本不同，JUnit 5由三个不同子项目的多个不同模块组成:
+
+* **JUnit Platform**：其主要作用是在JVM上启动测试框架。它定义了一个抽象的TestEngine API来定义运行在平台上的测试框架；也就是说其他的自动化测试引擎或开发人员⾃⼰定制的引擎都可以接入Junit实现对接和执行。同时还支持通过命令行、Gradle和Maven来运行平台（这对于做自动化测试至关重要）。
+
+* **JUnit Jupiter**：Junit5的核心，可以看作是承载Junit4原有功能的演进，包含了JUnit 5最新的编程模型和扩展机制；很多丰富的新特性使JUnit⾃动化测试更加方便、功能更加丰富和强大。也是测试需要重点学习的地方；Jupiter本身也是⼀一个基于Junit Platform的引擎实现，对JUnit 5而言，JUnit Jupiter API只是另一个API！。
+
+* **JUnit Vintage**：这个模块是对JUnit3，JUnit4版本兼容的测试引擎，使旧版本junit的⾃动化测试脚本也可以顺畅运行在Junit5下，也可以看作是基于Junit Platform实现的引擎范例。
+
+使用JUnit5编写单元测试的具体步骤如下：
+
+* 使用`@Test`注解标识测试方法。
+
+* 用JUnit5的断言方法（如assertEquals，assertTrue等）来验证被测试的代码的行为是否符合预期。
+
+```java
+import org.junit.jupiter.api.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class CalculatorTest {
+    private Calculator calculator;
+
+    @BeforeEach
+    public void setUp() {
+        calculator = new Calculator();
+    }
+
+    @Test
+    public void testAdd() {
+        assertEquals(5, calculator.add(2, 3));
+    }
+
+    @AfterEach
+    public void tearDown() {
+        calculator = null;
+    }
+}
+```
+
+#### JUnit5注解
+
+JUnit5除了继承了JUnit4的注解之外，还引入了一些新的注解，主要包括：
+
+* `@Test`：用于标记一个测试方法，这个方法会被JUnit执行。这个注解通常用于标记测试方法。
+
+* `@DisplayName`：用于指定测试类或测试方法的显示名称，为测试类或者测试方法自定义一个名称。
+
+* `@BeforeEach`：用于标记一个方法，这个方法会在每个测试方法之前执行，每个测试方法执行前都会执行一次。这个注解通常用于执行一些只需要在每个测试方法执行前执行的准备工作，比如初始化对象等。相当于JUnit4的`@Before`注解。
+
+* `@AfterEach`：用于标记一个测试方法，这个方法会在每个测试方法之后执行，每个测试方法执行后都会执行一次。这个注解通常用于执行一些只需要在每个测试方法执行后执行的清理工作，比如释放资源等。相当于Junit4的`@After`注解。
+
+* `@BeforeAll`：用于标记一个测试类中的静态方法，这个方法会在所有测试方法之前执行，全局只会执行一次，而且是第一个运行。这个注解通常用于执行一些只需要在类开始测试时执行一次的准备工作，比如设置静态变量，或者打开数据库连接等。相当于JUnit4的`@BeforeClass`注解，但允许一个测试类中出现多个`@BeforeAll`修饰的方法。
+
+* `@AfterAll`：用于标记一个测试类中的静态方法，这个方法会在所有测试方法之后执行，全局只会执行一次，而且是最后一个运行。这个注解通常用于执行一些只需要在类结束测试时执行一次的清理工作，比如关闭数据库连接等。相当于JUnit4的`@AfterClass`注解，但允许一个测试类中出现多个`@AfterAll`修饰的方法。
+
+* `@Disabled`：标识测试类或测试方法不执行。
+
+* `@Timeout`：设置测试方法的超时时间。
+
+* `@RepeatedTest`：用于重复测试，允许在测试方法上指定重复执行的次数。
+
+* `@ParameterizedTest`：用于参数化测试，允许在测试方法上指定参数化测试的参数来源，通常与`@ValueSource`，`@EnumSource`，`@MethodSource`，`@CsvSource`，`@CsvFileSource`等注解一起使用，这些注解用于提供参数。
+
+  * `@ValueSource`：用于指定参数化测试的参数来源，参数来源可以是一个数组，一个枚举，或者一个字符串。
+
+  * `@MethodSource`：用于指定参数化测试的参数来源，参数来源可以是一个方法。
+
+  * `@EnumSource`：用于指定参数化测试的参数来源，参数来源可以是一个枚举。
+
+* `@Nested`：用于嵌套测试，允许在测试类中创建嵌套的测试类。
+
+* `@Tag`：用于标记测试类或测试方法，允许在测试方法上指定标签。
+
+* `@Order`：用于指定测试方法的执行顺序，接受一个整数参数，数字越小，执行的优先级越高，同时`@Order`注解需要搭配`@TestMethodOrder(MethodOrderer.OrderAnnotation.class)`一起使用。
+
+#### JUnit5断言
+
+同JUnit4一样，Junit5提供了一组断言方法（位于Assertions），用于验证方法调用的结果是否符合预期。常用的断言方法包括：
+
+* `assertEquals()`：验证两个值是否相等。
+
+* `assertNotEquals()`：验证两个值是否不相等。
+
+* `assertTrue()`：验证条件是否为真。
+
+* `assertFalse()`：验证条件是否为假。
+
+* `assertNull()`：验证值是否为null。
+
+* `assertNotNull()`：验证值是否不为null。
+
+* `assertArrayEquals()`：验证两个数组是否相等。
+
+* `assertSame()`：验证两个对象引用是否指向同一个对象。
+
+* `assertNotSame()`：验证两个对象引用是否指向不同的对象。
+
+* `assertIterableEquals()`：验证两个Iterable对象是否相等。
+
+* `assertLinesMatch()`：验证两个字符串列表是否匹配。
+
+* `assertTimeout()`：验证方法是否在指定的时间内完成。
+
+* `assertAll()`：验证多个断言，如果有一个断言失败，其他断言也会继续执行。
+
+* `assertThat()`：接受一个匹配器（Matcher）对象作为参数，用于定义测试的预期行为。如果要在JUnit5中使用`assertThat()`，需要引入Hamcrest框架依赖，然后使用`assertThat()`方法结合Hamcrest的Matcher来验证方法调用的结果。
+
+#### JUnit5异常处理
+
+* `assertThrows()`：测试被测试方法是否抛出至少指定的异常。如果被测试方法抛出多个异常，则只要其中一个异常与指定的异常类型匹配，测试就会通过。
+
+* `assertThrowsExactly()`：用于测试被测试方法只抛出指定的异常。被测试方法只能抛出指定的异常，如果被测试方法抛出多个异常，或者没有抛出任何异常，测试都会失败 。
+
+* `@Timeout`：设置测试方法的超时时间。
+
+#### JUnit5单测示例
+
+```java
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+class CalculatorTest {
+    private Calculator calculator;
+
+    @BeforeAll
+    public static void initAll() {
+        System.out.println("Initializing tests...");
+    }
+
+    @BeforeEach
+    public void init() {
+        calculator = new Calculator();
+    }
+
+    @Test
+    @Order(1)
+    @Timeout(10)
+    @Tag("prod")
+    public void testAdd() {
+        assertEquals(5, calculator.add(2, 3), "Addition result should be 5");
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("测试减法")
+    @Tag("prod")
+    public void testSubtract() {
+        assertNotEquals(0, calculator.subtract(5, 2), "Subtraction result should not be 0");
+    }
+
+    @Test
+    @Order(3)
+    @Disabled
+    @Tag("prod")
+    public void testMultiply() {
+        assertTrue(calculator.multiply(2, 3) == 6, "Multiplication result should be 6");
+        assertFalse(calculator.multiply(2, 3) == 7, "Multiplication result should not be 7");
+    }
+
+    @Test
+    @Order(4)
+    @Tag("prod")
+    public void testDivide() {
+        assertThrows(ArithmeticException.class, () -> calculator.divide(5, 0), "Division by zero should throw ArithmeticException");
+    }
+
+    @RepeatedTest(value = 5, name = "当前循环第{currentRepetition}次, 总共{totalRepetitions}次")
+    public void customDisplayNameTest() {
+        // 这个测试将会被执行5次，每次的显示名称都会不同
+        Assertions.assertTrue(Math.random() > 0.1);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        calculator = null;
+    }
+
+    @AfterAll
+    public static void tearDownAll() {
+        System.out.println("Tests completed.");
+    }
+}
+```
+
+如果需要测试一个类的不同方面，或者测试一个类在不同条件下的行为，可以使用@Nested注解来标记一个内部类，用于进行嵌套测试：
+
+```java
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+
+public class JUnit5NestedCalculateTest {
+
+    @Nested
+    class CalculateAddTest {
+        @Test
+        public void testAdd() {
+            JUnit5Calculate jUnit5Calculate = new JUnit5Calculate();
+            int result = jUnit5Calculate.add(1, 2);
+            Assertions.assertEquals(3, result);
+        }
+    }
+
+    @Nested
+    class CalculateDivideTest {
+        @Test
+        public void testDivideByZero() {
+            JUnit5Calculate jUnit5Calculate = new JUnit5Calculate();
+            ArithmeticException thrown = Assertions.assertThrows(ArithmeticException.class, () -> {
+                jUnit5Calculate.divide(5, 0);
+            }, "Division by zero should throw ArithmeticException");
+            Assertions.assertEquals(thrown.getMessage(), "/ by zero");
+        }
+
+        @Test
+        public void testDivide() {
+            JUnit5Calculate jUnit5Calculate = new JUnit5Calculate();
+            int result = jUnit5Calculate.divide(5, 1);
+            Assertions.assertEquals(5, result);
+        }
+    }
+
+}
+```
+
+嵌套的测试类可以有它们自己的`@BeforeEach`，`@AfterEach`，`@BeforeAll`和`@AfterAll`方法。这些方法只对嵌套的测试类中的测试方法有效，不会影响到外部的测试类。
+
+若要在JUnit5中进行参数化测试，可以使用`@ParameterizedTest`注解，结合`@ValueSource`，`@EnumSource`，`@MethodSource`，`@CsvSource`，`@CsvFileSource`等注解一起使用，这些注解用于提供参数。
+
+```xml
+<!-- 需要引入参数化测试依赖 -->
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-params</artifactId>
+    <version>5.10.2</version>
+    <scope>test</scope>
+</dependency>
+```
+
+```java
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class ParameterizedTestExample {
+
+    enum Day { MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY }
+
+    @ParameterizedTest(name = "第{index}次测试, 参数为{arguments}")
+    @ValueSource(ints = {2, 4, 6, 8, 10})
+    void testEvenNumbers(int number) {
+        assertTrue(number % 2 == 0);
+    }
+
+    @ParameterizedTest
+    @EnumSource(Day.class)
+    void testDays(Day day) {
+        assertNotNull(day);
+    }
+
+    @ParameterizedTest
+    @MethodSource("stringProvider")
+    void testWithExplicitLocalMethodSource(String argument) {
+        assertNotNull(argument);
+    }
+
+    static Stream<String> stringProvider() {
+        return Stream.of("apple", "banana");
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "apple, 1",
+        "banana, 2",
+        "'lemon, lime', 0xF1"
+    })
+    void testWithCsvSource(String fruit, int rank) {
+        assertNotNull(fruit);
+        assertNotEquals(0, rank);
+    }
+}
+```

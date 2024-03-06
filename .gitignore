@@ -1,0 +1,9 @@
+/.idea/
+/target/
+/.vscode/
+/.tmp.driveupload/
+.project
+.classpath
+logs
+.settings
+.iml
